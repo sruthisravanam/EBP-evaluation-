@@ -1,0 +1,118 @@
+---
+title: "EBP evaluation"
+author: "Sruthi"
+date: "2022-12-02"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Load Hmisc library
+library(Hmisc)
+library(readxl)
+#Read Data
+path<-file.path("C:", "Users", "srava", "Desktop", "GitHub", "EBP", fsep="\\")
+setwd(path)
+
+overalldata<-read_excel("allpartdata.xlsx")
+
+#Overall descriptives
+
+
+#install.packages("qwraps2")
+library(qwraps2)
+options(qwraps2_markup = "markdown")
+overall_demographics <- as.data.frame(overalldata)
+
+overall_summary <-list(
+    #Age=q1
+    "Age"=
+      list("Mean(sd)"=~qwraps2::mean_sd(q1,na_rm = TRUE, denote_sd="paren")),
+    
+    #Gender=q4
+    "Gender" =
+       list("Male" = ~ qwraps2::n_perc(q4 == 1,na_rm = TRUE),
+            "Female"  = ~ qwraps2::n_perc(q4 == 2,na_rm = TRUE),
+            "Transgender"  = ~ qwraps2::n_perc(q4 == 3,na_rm = TRUE),
+            "Other"= ~ qwraps2::n_perc(q4 == 4,na_rm = TRUE)
+            ),
+    #Ethnicity=q5
+    "Ethnicity" =
+        list("Hispanic/Latino"= ~ qwraps2::n_perc(q5 == 1,na_rm = TRUE),
+             "Not Hispanic/Latino"= ~ qwraps2::n_perc(q5 == 0,na_rm=TRUE)
+             ),
+    #Race=q6
+    "Race" = 
+    list(
+    "White/Caucasian"= ~ qwraps2::n_perc(q6___1 == 1,na_rm = TRUE),
+    "Black/African American"= ~ qwraps2::n_perc(q6___2 == 1,na_rm = TRUE),
+    "Asian"= ~ qwraps2::n_perc(q6___3 == 1,na_rm = TRUE),
+    "Native Hawaiian/Pacific Islander"= ~ qwraps2::n_perc(q6___4 == 1,na_rm = TRUE),
+    "American Indian/Native American"= ~ qwraps2::n_perc(q6___5 == 1,na_rm = TRUE),
+    "Other "= ~ qwraps2::n_perc(q6___6 == 1,na_rm = TRUE)
+    
+       ),
+    #Chronic conditions=q7
+    "Chronic conditions" = 
+      list(
+    "Mean (sd)"= ~ qwraps2::mean_sd(q7___1+q7___2+q7___3+q7___4+q7___5+q7___6+q7___7+q7___8+q7___9+q7___10+q7___11+q7___12+q7___13+q7___14+q7___15+q7___16+q7___17/17,na_rm = TRUE, denote_sd="paren"),
+    "Median (Min, Max)"= ~ qwraps2::median_iqr(q7___1+q7___2+q7___3+q7___4+q7___5+q7___6+q7___7+q7___8+q7___9+q7___10+q7___11+q7___12+q7___13+q7___14+q7___15+q7___16+q7___17/17,na_rm = TRUE),
+    "One or more"=~qwraps2::n_perc(q7___1+q7___2+q7___3+q7___4+q7___5+q7___6+q7___7+q7___8+q7___9+q7___10+q7___11+q7___12+q7___13+q7___14+q7___15+q7___16+q7___17/17>=1,na_rm = TRUE)
+           ),
+    
+    #Ruralilty=cleaned_rural
+    "Rurality" =
+      list(
+        "Rural"= ~qwraps2::n_perc(cleaned_rural==1,na_rm = TRUE)
+      ),
+    
+    #Highest level of education=q9
+    "Highest level of education"=
+     list(
+"Less than high school/GED"=~qwraps2::n_perc(q9_school==1,na_rm = TRUE),
+"Some high school"=~qwraps2::n_perc(q9_school==2,na_rm = TRUE),
+"High school graduate/GED"=~qwraps2::n_perc(q9_school==3,na_rm = TRUE),
+"Some college"=~qwraps2::n_perc(q9_school==4,na_rm = TRUE),
+"College graduate"=~qwraps2::n_perc(q9_school==5,na_rm = TRUE),
+"Post- college"=~qwraps2::n_perc(q9_school==6,na_rm = TRUE)
+     ),
+
+     #How hard to pay for basics=q8
+"How hard to pay for basics (e.g., food, housing, medical care, etc.)"=
+     list(
+       "Not hard at all"=~qwraps2::n_perc(q8_pay==1,na_rm = TRUE),
+       "Somewhat hard"=~qwraps2::n_perc(q8_pay==2,na_rm = TRUE),
+       "Very hard"=~qwraps2::n_perc(q8_pay==3,na_rm = TRUE)),
+#Live alone=q2
+   list(
+   "Live alone"=~qwraps2::n_perc(q2==1,na_rm = TRUE)),
+      
+       #Caregiver=q3
+  list(
+      "Caregiver role"=~qwraps2::n_perc(q3==1,na_rm = TRUE))
+      
+)
+
+#Overall table
+overall<- summary_table(overall_demographics, overall_summary)
+overall
+
+#Summary table by program
+demobyprogram <- summary_table(overall_demographics, overall_summary, by="q10")
+demobyprogram
+
+
+#SUmmary table by mode
+demobymode<-summary_table(overall_demographics, overall_summary, by="q11")
+demobymode
+
+
+
+                  
+```
+
