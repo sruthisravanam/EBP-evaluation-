@@ -17,7 +17,7 @@ my_repo <- 'http://cran.r-project.org'
 if (!require("pacman")) {install.packages("pacman", repos = my_repo)}
 
 # Load the other packages, installing as needed.
-pacman::p_load(readr, dplyr, tidyr, lubridate, table1, stringr)
+pacman::p_load(readr, dplyr, tidyr, lubridate, table1, stringr, ggplot2)
 
 #set working directory 
 # setwd("~/Documents/Git/HPRC EBP")
@@ -34,21 +34,66 @@ table(df_outcomes$redcap_event_name, useNA = "always")
 ## N = 252 post arm 1
 ## N = 496 pre arm 1
 
-# filter out record id with z - indicates duplicate
-df_outcomes <- df_outcomes %>%
-  filter(!str_detect(record_id, "z")) # N = 1871
-
 ##filter out pre/post arm for summary scales and descriptives
 
 df_outcomes <- df_outcomes %>%
-  filter(str_detect(redcap_event_name, "pre|post")) # N = 890
+  filter(str_detect(redcap_event_name, "pre|post")) # N = 908
 
 ## look at just post data
 df_post <- df_outcomes %>%
-  filter(str_detect(redcap_event_name, "post")) # N =285 but a lot of these look missing
+  filter(str_detect(redcap_event_name, "post")) # N =293 but a lot of these look missing
 
 df_pre <- df_outcomes %>%
-  filter(str_detect(redcap_event_name, "pre"))
+  filter(str_detect(redcap_event_name, "pre")) # N = 615
+
+# copy of data to refer back to)
+write.csv(df_pre,"pre_only.csv", row.names = FALSE)
+write.csv(df_post,"post_only.csv", row.names = FALSE)
+
+#copying NA of demographics and 
+df_outcomes<-df_outcomes %>%
+  group_by(record_id) %>% 
+  fill(zip:q11_other, .direction = "down")
+#copying rural info from datamanagment rows to pre and post
+df_outcomes<-df_outcomes %>%
+  group_by(record_id) %>% 
+  fill(cleaned_rural, .direction = "up")
+
+## Q10- Which program are you currently taking?
+table(df_outcomes$q10) # filter out 5 (N=12) and 6 (N=29)
+
+df_outcomes <- df_outcomes %>%
+  filter(q10 != "5") 
+
+df_outcomes <- df_outcomes %>%
+  filter(q10 != "6") 
+
+## Filter out missing data
+df_post <- df_post %>% 
+  filter(!is.na(program_survey_time)) #N=232
+df_pre <- df_pre %>% 
+  filter(!is.na(program_survey_time)) #N=529
+
+df_missing <- df_outcomes %>% 
+  filter(is.na(program_survey_time))#N=761
+
+df_missing2 <- df_outcomes %>% 
+  filter(is.na(health)) %>% 
+  filter(is.na(fatigue)) %>%
+  filter(is.na(health))
+  filter(is.na(pa1))
+
+df_outcomes$q10 <- 
+  factor(df_outcomes$q10, levels=c(1, 2, 3, 4, 5, 6, 7),
+         labels=c("CDSMP", 
+                  "CPSMP",
+                  "DSMP", 
+                  "EnhanceFitness",
+                  "Healthy IDEAS",
+                  "HomeMeds",
+                  "Walk with Ease"))
+
+
 
 ## filter out missing post data
 # df_outcomes <- df_outcomes %>% 
@@ -141,7 +186,7 @@ table(df_outcomes$resources___0, useNA = "always") # range 0/1, not including _0
 ## social needs cleaning of resources variable
 
 # copy of data to refer back to)
-write.csv(df_outcomes,"df_outcomes.csv", row.names = FALSE)
+write.csv(df_outcomes,"cleaned_all.csv", row.names = FALSE)
 
 ## check resources___other
 table(df_outcomes$resources_other)
@@ -280,7 +325,7 @@ table(df_outcomes$cc2, useNA = "always") # range 1-10
 
 ## create self efficacy measure (range is 6-60)
 df_outcomes <- df_outcomes %>%
-  mutate(self_efficacy = cc1 + cc2 + cc3 + cc4 + cc5 + cc6 )
+  mutate(self_efficacy = (cc1 + cc2 + cc3 + cc4 + cc5 + cc6)/6 )
 
 #check variable
 table(df_outcomes$self_efficacy, useNA = "always")
@@ -315,33 +360,46 @@ df_outcomes <- df_outcomes %>%
            case_when(str_detect(redcap_event_name, "pre") ~ "pre",
                      str_detect(redcap_event_name, "post") ~ "post"))
 
-
-table(df_outcomes$pre_post) # Pre N = 605, post N = 285
-
 df_outcomes$pre_post <- 
   factor(df_outcomes$pre_post, levels=c("pre", "post"),
          labels=c("Pre", 
                   "Post"))
 
 
+table(df_outcomes$pre_post) # Pre N = 605, post N = 285
+
+## create enrolled/completers variable
+df_outcomes <- df_outcomes %>% group_by(record_id) %>%
+  mutate(count=n())
+
+# check variable
+table(df_outcomes$count)
+
+df_outcomes <- df_outcomes %>% group_by(record_id) %>% 
+  mutate(completers = 
+           ifelse(count >1, "Completers", "Enrollees"))
+
+
+df_outcomes$completers <- 
+  factor(df_outcomes$completers, levels=c("Enrollees","Completers"),
+         labels=c("Enrollees", 
+                  "Completers"))
+         
+# check variable
+table(df_outcomes$completers)
+
+### Tables ##### 
 table1( ~ loneliness + soc_isolation + anxiety + depression +
            phys_activity + social_needs + self_efficacy + pain_interference + diabetes| redcap_event_name, data = df_outcomes)
 
 table1( ~ loneliness + soc_isolation + anxiety + depression +
           phys_activity + social_needs + self_efficacy + pain_interference + diabetes| pre_post, data = df_outcomes)
 
-## Q10- Which program are you currently taking?
-df_outcomes$q10 <- 
-  factor(df_outcomes$q10, levels=c(1, 2, 3, 4, 5, 6, 7),
-         labels=c("CDSMP", 
-                  "CPSMP",
-                  "DSMP", 
-                  "EnhanceFitness",
-                  "Healthy IDEAS",
-                  "HomeMeds",
-                  "Walk with Ease"))
 
-table(df_outcomes$q10)
+table1( ~ loneliness + soc_isolation + anxiety + depression +
+          phys_activity + social_needs + self_efficacy + pain_interference + diabetes + 
+          health + fatigue + pain + sleep | completers + pre_post, data = df_outcomes)
+
 
 table1( ~ loneliness + soc_isolation + anxiety + depression +
           phys_activity + social_needs + self_efficacy + pain_interference + diabetes| q10, data = df_outcomes)
@@ -371,4 +429,158 @@ table1( ~ loneliness + soc_isolation + anxiety + depression +
           phys_activity + social_needs + self_efficacy + pain_interference + diabetes| q10 + pre_post, data = df)
 
 # copy of data to refer back to)
-write.csv(df,"df_outcomescheck.csv", row.names = FALSE)
+write.csv(df,"pre_postonly.csv", row.names = FALSE)
+
+### Individual measures
+
+#### self-rated health
+table(df_outcomes$health, useNA = "always")
+
+## bar plot for health
+ggplot(df_outcomes, aes(x = health)) +
+  scale_x_continuous(breaks = c(1, 2, 3, 4, 5)) +
+  geom_text(stat='count', aes(label=..count..), vjust=-1) +
+  geom_bar()
+
+#### Fatigue
+table(df_outcomes$fatigue, useNA = "always")
+
+ggplot(df_outcomes, aes(x = fatigue)) +
+  scale_x_continuous(breaks = c(1:10)) +
+  geom_text(stat='count', aes(label=..count..), vjust=-1) +
+  geom_bar()
+
+#### Pain
+table(df_outcomes$pain, useNA = "always")
+
+ggplot(df_outcomes, aes(x = pain)) +
+  scale_x_continuous(breaks = c(1:10)) +
+  geom_text(stat='count', aes(label=..count..), vjust=-1) +
+  geom_bar()
+
+#### Sleep
+table(df_outcomes$sleep, useNA = "always")
+
+ggplot(df_outcomes, aes(x = sleep)) +
+  scale_x_continuous(breaks = c(1:10)) +
+  geom_text(stat='count', aes(label=..count..), vjust=-1) +
+  geom_bar()
+
+### Loneliness distribution
+
+ggplot(df_outcomes, aes(x = loneliness)) +
+  scale_x_continuous(breaks = c(3, 4, 5, 6, 7, 8, 9)) +
+  geom_text(stat='count', aes(label=..count..), vjust=-1) +
+  geom_bar()
+
+#### Social isolation
+table(df_outcomes$soc_isolation, useNA = "always")
+
+ggplot(df_outcomes, aes(x = soc_isolation)) +
+  scale_x_continuous(breaks = c(5:25)) +
+  geom_text(stat='count', aes(label=..count..), vjust=-1) +
+  geom_bar()
+  
+#### Anxiety
+table(df_outcomes$anxiety, useNA = "always")
+
+ggplot(df_outcomes, aes(x = anxiety)) +
+  scale_x_continuous(breaks = c(0:6)) +
+  geom_text(stat='count', aes(label=..count..), vjust=-1) +
+  geom_bar()
+
+#### Depression
+table(df_outcomes$depression, useNA = "always")
+
+ggplot(df_outcomes, aes(x = depression)) +
+  scale_x_continuous(breaks = c(0:24)) +
+  geom_text(stat='count', aes(label=..count..), vjust=-1) +
+  geom_bar()
+
+#### Physical activity
+table(df_outcomes$phys_activity, useNA = "always")
+
+ggplot(df_outcomes, aes(x = phys_activity)) +
+  geom_text(stat='count', aes(label=..count..), vjust=-1) +
+  geom_bar()
+
+#### Social needs
+table(df_outcomes$social_needs, useNA = "always")
+
+ggplot(df_outcomes, aes(x = social_needs)) +
+  scale_x_continuous(breaks = c(0:11)) +
+  geom_text(stat='count', aes(label=..count..), vjust=-1) +
+  geom_bar()
+
+#### Self-efficacy
+table(df_outcomes$self_efficacy, useNA = "always")
+
+ggplot(df_outcomes, aes(x = self_efficacy)) +
+  scale_x_continuous(breaks = c(0:10)) +
+  geom_text(stat='count', aes(label=..count..), vjust=-1) +
+  geom_bar()
+
+#### Pain interference
+table(df_outcomes$pain_interference, useNA = "always")
+
+ggplot(df_outcomes, aes(x = pain_interference)) +
+  scale_x_continuous(breaks = c(6:30)) +
+  geom_text(stat='count', aes(label=..count..), vjust=-1) +
+  geom_bar()
+
+#### Diabetes symptoms
+table(df_outcomes$diabetes, useNA = "always")
+
+ggplot(df_outcomes, aes(x = diabetes)) +
+  scale_x_continuous(breaks = c(0:11)) +
+  geom_text(stat='count', aes(label=..count..), vjust=-1) +
+  geom_bar()
+
+### Table of health, fatigue, pain, sleep
+table1( ~ health +fatigue + pain + sleep | pre_post, data = df_outcomes)
+
+### Physical activity separate
+table(df_outcomes$pa1, useNA = "always")
+
+label(df_outcomes$pa1) <- "Number of days aerobic activity reported"
+
+ggplot(df_outcomes, aes(x = pa1)) +
+  xlab("Number of days aerobic activity reported") +
+  scale_x_continuous(breaks = c(0:11)) +
+  geom_text(stat='count', aes(label=..count..), vjust=-1) +
+  geom_bar()
+
+## Pa 2
+table(df_outcomes$pa2_recoded, useNA = "always")
+
+label(df_outcomes$pa2) <- "Number of minutes aerobic activity reported"
+
+ggplot(df_outcomes, aes(x = pa2)) +
+  xlab("Number of minutes aerobic activity reported") +
+  scale_x_continuous(breaks = c(0:90)) +
+  geom_text(stat='count', aes(label=..count..), vjust=-1) +
+  geom_bar()
+
+### Table of pa 1 and pa2
+table1( ~ pa1 + pa2 | pre_post, data = df_outcomes)
+
+## 
+table(df_outcomes$depression, useNA = "always")
+
+## Depression higher than 6
+df_depression6 <- df_outcomes %>%
+  filter(depression > 6)
+
+table(df_depression6$depression, useNA = "always")
+
+table1( ~ depression | pre_post, data = df_depression6)
+
+df_depression10 <- df_outcomes %>%
+  filter(depression > 10)
+
+table1( ~ depression | pre_post, data = df_depression10)
+
+
+# copy of data to refer back to)
+write.csv(df_outcomes,"cleaned_data.csv", row.names = FALSE)
+
