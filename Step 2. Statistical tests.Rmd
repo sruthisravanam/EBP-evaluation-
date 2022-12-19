@@ -1,0 +1,222 @@
+---
+title: "Step 2. Statistical tests"
+author: "Erica Chavez Santos"
+date: "2022-12-19"
+output: html_document
+---
+
+
+```{r clear.workspace, eval=FALSE, echo=FALSE, include =FALSE}
+#-----clear workspace-----
+# Clear the environment without clearing knitr
+
+# Clear workspace of all objects and unload all extra (non-base) packages
+rm(list = ls(all = TRUE))
+if (!is.null(sessionInfo()$otherPkgs)) {
+    suppressWarnings(
+        lapply(paste('package:', names(sessionInfo()$otherPkgs), sep=""),
+               detach, character.only=TRUE, unload=TRUE, force=TRUE)
+        )
+}
+
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+setwd("~/Documents/Git/EBP Eval Outcomes")
+
+# Load the other packages, installing as needed.
+pacman::p_load(readr, dplyr, tidyr, lubridate, table1, stringr, ggplot2, kableExtra)
+
+
+# read in data
+df_outcomes <- read_csv("cleaned_data.csv") 
+
+depression6 <- read_csv("phq9_6_data.csv") 
+depression10 <- read_csv("phq9_10_data.csv") 
+
+## filter out enrollees so we only have completers for tests
+df_outcomes <- df_outcomes %>% 
+  filter(completers != "Enrollees") # N = 578
+
+depression6 <- depression6 %>% 
+  filter(completers != "Enrollees") # N = 173
+
+depression10 <- depression10 %>% 
+  filter(completers != "Enrollees") # N = 80
+
+
+```
+
+### Statistical tests
+#### Completers only 
+
+#### Loneliness
+```{r loneliness, echo=FALSE}
+loneliness <- t.test(df_outcomes$loneliness[df_outcomes$pre_post=="Pre"],df_outcomes$loneliness[df_outcomes$pre_post=="Post"], paired = TRUE)
+
+loneliness
+
+
+fisher.test(df_outcomes$loneliness[df_outcomes$pre_post=="Pre"],df_outcomes$loneliness[df_outcomes$pre_post=="Post"], simulate.p.value=TRUE)
+
+
+
+```
+
+#### Social isolation
+```{r social isolation, echo=FALSE}
+social_isolation <- t.test(df_outcomes$soc_isolation[df_outcomes$pre_post=="Pre"],df_outcomes$soc_isolation[df_outcomes$pre_post=="Post"], paired = TRUE)
+
+social_isolation
+
+
+fisher.test(df_outcomes$soc_isolation[df_outcomes$pre_post=="Pre"],df_outcomes$soc_isolation[df_outcomes$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Anxiety
+```{r anxiety, echo=FALSE}
+anxiety <- t.test(df_outcomes$anxiety[df_outcomes$pre_post=="Pre"],df_outcomes$anxiety[df_outcomes$pre_post=="Post"], paired = TRUE)
+anxiety
+
+fisher.test(df_outcomes$anxiety[df_outcomes$pre_post=="Pre"],df_outcomes$anxiety[df_outcomes$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Depression 
+```{r depression, echo=FALSE}
+depression <- t.test(df_outcomes$depression[df_outcomes$pre_post=="Pre"],df_outcomes$depression[df_outcomes$pre_post=="Post"], paired = TRUE)
+depression
+
+fisher.test(df_outcomes$depression[df_outcomes$pre_post=="Pre"],df_outcomes$depression[df_outcomes$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Depression > 6
+```{r depression 6, echo =FALSE}
+table(depression6$depression, depression6$pre_post)
+depression6 <- t.test(depression6$depression[depression6$pre_post=="Pre"],depression6$depression[depression6$pre_post=="Post"], paired = TRUE)
+depression6
+
+fisher.test(depression6$depression[depression6$pre_post=="Pre"],depression6$depression[depression6$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Depression 10
+```{r depression 10, echo = FALSE}
+table(depression10$depression, depression10$pre_post)
+depression10 <- t.test(depression10$depression[depression10$pre_post=="Pre"],depression10$depression[depression10$pre_post=="Post"], paired = TRUE)
+depression10
+
+fisher.test(depression10$depression[depression10$pre_post=="Pre"],depression10$depression[depression10$pre_post=="Post"], simulate.p.value=TRUE)
+
+```
+
+
+#### Physical activity
+```{r physcial activity, echo=FALSE}
+phys_activity <- t.test(df_outcomes$phys_activity[df_outcomes$pre_post=="Pre"],df_outcomes$phys_activity[df_outcomes$pre_post=="Post"], paired = TRUE)
+phys_activity
+
+fisher.test(df_outcomes$phys_activity[df_outcomes$pre_post=="Pre"],df_outcomes$phys_activity[df_outcomes$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Physical activity - # of days
+```{r physical activity days, echo=FALSE}
+Days <- t.test(df_outcomes$pa1[df_outcomes$pre_post=="Pre"],df_outcomes$pa1[df_outcomes$pre_post=="Post"], paired = TRUE)
+Days
+
+fisher.test(df_outcomes$pa1[df_outcomes$pre_post=="Pre"],df_outcomes$pa1[df_outcomes$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Physical activity - # of minutes
+```{r physical activity minutes, echo=FALSE}
+Minutes <- t.test(df_outcomes$pa2[df_outcomes$pre_post=="Pre"],df_outcomes$pa2[df_outcomes$pre_post=="Post"], paired = TRUE)
+Minutes
+
+fisher.test(df_outcomes$pa2[df_outcomes$pre_post=="Pre"],df_outcomes$pa2[df_outcomes$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Social needs
+```{r social needs, echo=FALSE}
+soc_needs <- t.test(df_outcomes$social_needs[df_outcomes$pre_post=="Pre"],df_outcomes$social_needs[df_outcomes$pre_post=="Post"], paired = TRUE)
+soc_needs
+
+fisher.test(df_outcomes$social_needs[df_outcomes$pre_post=="Pre"],df_outcomes$social_needs[df_outcomes$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Self-efficacy
+```{r self efficacy, echo=FALSE}
+self_efficacy <- t.test(df_outcomes$self_efficacy[df_outcomes$pre_post=="Pre"],df_outcomes$self_efficacy[df_outcomes$pre_post=="Post"], paired = TRUE)
+self_efficacy
+
+fisher.test(df_outcomes$self_efficacy[df_outcomes$pre_post=="Pre"],df_outcomes$self_efficacy[df_outcomes$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Pain interference
+```{r pain interference, echo=FALSE}
+pain_interference <- t.test(df_outcomes$pain_interference[df_outcomes$pre_post=="Pre"],df_outcomes$pain_interference[df_outcomes$pre_post=="Post"], paired = TRUE)
+pain_interference
+
+fisher.test(df_outcomes$pain_interference[df_outcomes$pre_post=="Pre"],df_outcomes$pain_interference[df_outcomes$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Diabetes
+```{r diabetes, echo=FALSE}
+diabetes <- t.test(df_outcomes$diabetes[df_outcomes$pre_post=="Pre"],df_outcomes$diabetes[df_outcomes$pre_post=="Post"], paired = TRUE)
+diabetes
+
+fisher.test(df_outcomes$diabetes[df_outcomes$pre_post=="Pre"],df_outcomes$diabetes[df_outcomes$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Self-rated health
+```{r health, echo=FALSE}
+health <- t.test(df_outcomes$health[df_outcomes$pre_post=="Pre"],df_outcomes$health[df_outcomes$pre_post=="Post"], paired = TRUE)
+health
+
+fisher.test(df_outcomes$health[df_outcomes$pre_post=="Pre"],df_outcomes$health[df_outcomes$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Fatigue
+```{r fatigue, echo=FALSE}
+fatigue <- t.test(df_outcomes$fatigue[df_outcomes$pre_post=="Pre"],df_outcomes$fatigue[df_outcomes$pre_post=="Post"], paired = TRUE)
+fatigue
+
+fisher.test(df_outcomes$fatigue[df_outcomes$pre_post=="Pre"],df_outcomes$fatigue[df_outcomes$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Pain
+```{r pain, echo=FALSE}
+pain <- t.test(df_outcomes$pain[df_outcomes$pre_post=="Pre"],df_outcomes$pain[df_outcomes$pre_post=="Post"], paired = TRUE)
+pain
+
+fisher.test(df_outcomes$pain[df_outcomes$pre_post=="Pre"],df_outcomes$pain[df_outcomes$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Sleep
+```{r sleep, echo=FALSE}
+sleep <- t.test(df_outcomes$sleep[df_outcomes$pre_post=="Pre"],df_outcomes$sleep[df_outcomes$pre_post=="Post"], paired = TRUE)
+sleep
+
+fisher.test(df_outcomes$sleep[df_outcomes$pre_post=="Pre"],df_outcomes$sleep[df_outcomes$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Tech3
+```{r tech3, echo=FALSE}
+tech3 <- t.test(df_outcomes$tech3[df_outcomes$pre_post=="Pre"],df_outcomes$tech3[df_outcomes$pre_post=="Post"], paired = TRUE)
+
+tech3
+
+fisher.test(df_outcomes$tech3[df_outcomes$pre_post=="Pre"],df_outcomes$tech3[df_outcomes$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Tech4
+```{r tech4, echo=FALSE}
+tech4 <- t.test(df_outcomes$tech4[df_outcomes$pre_post=="Pre"],df_outcomes$tech4[df_outcomes$pre_post=="Post"], paired = TRUE)
+
+tech4
+
+fisher.test(df_outcomes$tech4[df_outcomes$pre_post=="Pre"],df_outcomes$tech4[df_outcomes$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
