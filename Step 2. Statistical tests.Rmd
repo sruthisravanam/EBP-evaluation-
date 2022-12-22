@@ -2,7 +2,9 @@
 title: "Step 2. Statistical tests"
 author: "Erica Chavez Santos"
 date: "2022-12-19"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 
@@ -40,17 +42,31 @@ depression10 <- read_csv("phq9_10_data.csv")
 df_outcomes <- df_outcomes %>% 
   filter(completers != "Enrollees") # N = 578
 
-depression6 <- depression6 %>% 
+df_depression6 <- depression6 %>% 
   filter(completers != "Enrollees") # N = 173
 
-depression10 <- depression10 %>% 
+df_depression10 <- depression10 %>% 
   filter(completers != "Enrollees") # N = 80
 
+CDSMP <- df_outcomes %>% 
+  filter(q10 == "CDSMP")
+
+CPSMP <- df_outcomes %>% 
+  filter(q10 == "CPSMP")
+
+DSMP <- df_outcomes %>% 
+  filter(q10 == "DSMP")
+
+EnhanceFitness <- df_outcomes %>% 
+  filter(q10 == "EnhanceFitness")
+
+WalkEase <- df_outcomes %>% 
+  filter(q10 == "Walk with Ease")
 
 ```
 
 ### Statistical tests
-#### Completers only 
+#### Completers only
 
 #### Loneliness
 ```{r loneliness, echo=FALSE}
@@ -58,10 +74,7 @@ loneliness <- t.test(df_outcomes$loneliness[df_outcomes$pre_post=="Pre"],df_outc
 
 loneliness
 
-
 fisher.test(df_outcomes$loneliness[df_outcomes$pre_post=="Pre"],df_outcomes$loneliness[df_outcomes$pre_post=="Post"], simulate.p.value=TRUE)
-
-
 
 ```
 
@@ -96,18 +109,20 @@ fisher.test(df_outcomes$depression[df_outcomes$pre_post=="Pre"],df_outcomes$depr
 ```{r depression 6, echo =FALSE}
 table(depression6$depression, depression6$pre_post)
 depression6 <- t.test(depression6$depression[depression6$pre_post=="Pre"],depression6$depression[depression6$pre_post=="Post"], paired = TRUE)
+
 depression6
 
-fisher.test(depression6$depression[depression6$pre_post=="Pre"],depression6$depression[depression6$pre_post=="Post"], simulate.p.value=TRUE)
+fisher.test(df_depression6$depression[df_depression6$pre_post=="Pre"],df_depression6$depression[df_depression6$pre_post=="Post"], simulate.p.value=TRUE)
 ```
 
 #### Depression 10
 ```{r depression 10, echo = FALSE}
 table(depression10$depression, depression10$pre_post)
 depression10 <- t.test(depression10$depression[depression10$pre_post=="Pre"],depression10$depression[depression10$pre_post=="Post"], paired = TRUE)
+
 depression10
 
-fisher.test(depression10$depression[depression10$pre_post=="Pre"],depression10$depression[depression10$pre_post=="Post"], simulate.p.value=TRUE)
+fisher.test(df_depression10$depression[df_depression10$pre_post=="Pre"],df_depression10$depression[df_depression10$pre_post=="Post"], simulate.p.value=TRUE)
 
 ```
 
@@ -219,4 +234,676 @@ tech4
 
 fisher.test(df_outcomes$tech4[df_outcomes$pre_post=="Pre"],df_outcomes$tech4[df_outcomes$pre_post=="Post"], simulate.p.value=TRUE)
 ```
+
+### Tests by program (t-tests and Fshter's, except EnhanceFitness)
+##### Note: EnhanceFitness I only ran Fisher's test because sample is so small N = 24
+
+## CDSMP
+#### Loneliness (CDSMP)
+```{r loneliness CDSMP, echo=FALSE}
+t.test(CDSMP$loneliness[CDSMP$pre_post=="Pre"],CDSMP$loneliness[CDSMP$pre_post=="Post"], paired = TRUE)
+
+
+fisher.test(CDSMP$loneliness[CDSMP$pre_post=="Pre"],CDSMP$loneliness[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+
+```
+
+#### Social isolation (CDSMP)
+```{r social isolation CDSMP, echo=FALSE}
+
+t.test(CDSMP$soc_isolation[CDSMP$pre_post=="Pre"],CDSMP$soc_isolation[CDSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(CDSMP$soc_isolation[CDSMP$pre_post=="Pre"],CDSMP$soc_isolation[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Anxiety (CDSMP)
+```{r anxiety CDSMP, echo=FALSE}
+t.test(CDSMP$anxiety[CDSMP$pre_post=="Pre"],CDSMP$anxiety[CDSMP$pre_post=="Post"], paired = TRUE)
+
+
+fisher.test(CDSMP$anxiety[CDSMP$pre_post=="Pre"],CDSMP$anxiety[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Depression (CDSMP)
+```{r depression CDSMP, echo=FALSE}
+t.test(CDSMP$depression[CDSMP$pre_post=="Pre"],CDSMP$depression[CDSMP$pre_post=="Post"], paired = TRUE)
+
+
+fisher.test(CDSMP$depression[CDSMP$pre_post=="Pre"],CDSMP$depression[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Physical activity (CDSMP)
+```{r physcial activity CDSMP, echo=FALSE}
+t.test(CDSMP$phys_activity[CDSMP$pre_post=="Pre"],CDSMP$phys_activity[CDSMP$pre_post=="Post"], paired = TRUE)
+
+
+fisher.test(CDSMP$phys_activity[CDSMP$pre_post=="Pre"],CDSMP$phys_activity[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Physical activity - # of days (CDSMP)
+```{r physical activity days CDSMP, echo=FALSE}
+t.test(CDSMP$pa1[CDSMP$pre_post=="Pre"],CDSMP$pa1[CDSMP$pre_post=="Post"], paired = TRUE)
+Days
+
+fisher.test(CDSMP$pa1[CDSMP$pre_post=="Pre"],CDSMP$pa1[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Physical activity - # of minutes (CDSMP)
+```{r physical activity minutes CDSMP, echo=FALSE}
+t.test(CDSMP$pa2[CDSMP$pre_post=="Pre"],CDSMP$pa2[CDSMP$pre_post=="Post"], paired = TRUE)
+
+
+fisher.test(CDSMP$pa2[CDSMP$pre_post=="Pre"],CDSMP$pa2[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Social needs (CDSMP)
+```{r social needs CDSMP, echo=FALSE}
+t.test(CDSMP$social_needs[CDSMP$pre_post=="Pre"],CDSMP$social_needs[CDSMP$pre_post=="Post"], paired = TRUE)
+
+
+fisher.test(CDSMP$social_needs[CDSMP$pre_post=="Pre"],CDSMP$social_needs[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Self-efficacy (CDSMP)
+```{r self efficacy CDSMP, echo=FALSE}
+t.test(CDSMP$self_efficacy[CDSMP$pre_post=="Pre"],CDSMP$self_efficacy[CDSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(CDSMP$self_efficacy[CDSMP$pre_post=="Pre"],CDSMP$self_efficacy[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Pain interference (CDSMP) 
+##### Note: No observations, t-test wouldn't run
+```{r pain interference CDSMP, echo=FALSE}
+# table(CDSMP$pain_interference)
+# t.test(CDSMP$pain_interference[CDSMP$pre_post=="Pre"],CDSMP$pain_interference[CDSMP$pre_post=="Post"], paired = TRUE)
+# 
+# 
+# fisher.test(CDSMP$pain_interference[CDSMP$pre_post=="Pre"],CDSMP$pain_interference[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Diabetes (CDSMP)
+##### Note: No observations, t-test wouldn't run
+```{r diabetes CDSMP, echo=FALSE}
+# table(df_outcomes$diabetes, df_outcomes$q10)
+# t.test(CDSMP$diabetes[CDSMP$pre_post=="Pre"],CDSMP$diabetes[CDSMP$pre_post=="Post"], paired = TRUE)
+# 
+# 
+# fisher.test(CDSMP$diabetes[CDSMP$pre_post=="Pre"],CDSMPs$diabetes[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Self-rated health (CDSMP)
+```{r health CDSMP, echo=FALSE}
+t.test(CDSMP$health[CDSMP$pre_post=="Pre"],CDSMP$health[CDSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(CDSMP$health[CDSMP$pre_post=="Pre"],CDSMP$health[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Fatigue (CDSMP)
+```{r fatigue CDSMP, echo=FALSE}
+
+t.test(CDSMP$fatigue[CDSMP$pre_post=="Pre"],CDSMP$fatigue[CDSMP$pre_post=="Post"], paired = TRUE)
+
+
+fisher.test(CDSMP$fatigue[CDSMP$pre_post=="Pre"],CDSMP$fatigue[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Pain (CDSMP)
+```{r pain CDSMP, echo=FALSE}
+t.test(CDSMP$pain[CDSMP$pre_post=="Pre"],CDSMP$pain[CDSMP$pre_post=="Post"], paired = TRUE)
+
+
+fisher.test(CDSMP$pain[CDSMP$pre_post=="Pre"],CDSMP$pain[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Sleep (CDSMP)
+```{r sleep CDSMP, echo=FALSE}
+t.test(CDSMP$sleep[CDSMP$pre_post=="Pre"],CDSMP$sleep[CDSMP$pre_post=="Post"], paired = TRUE)
+
+
+fisher.test(CDSMP$sleep[CDSMP$pre_post=="Pre"],CDSMP$sleep[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Tech3 (CDSMP)
+```{r tech3 CDSMP, echo=FALSE}
+t.test(CDSMP$tech3[CDSMP$pre_post=="Pre"],CDSMP$tech3[CDSMP$pre_post=="Post"], paired = TRUE)
+
+
+fisher.test(CDSMP$tech3[CDSMP$pre_post=="Pre"],CDSMP$tech3[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Tech4 (CDSMP)
+```{r tech4 CDSMP, echo=FALSE}
+t.test(CDSMP$tech4[CDSMP$pre_post=="Pre"],CDSMP$tech4[CDSMP$pre_post=="Post"], paired = TRUE)
+
+
+fisher.test(CDSMP$tech4[CDSMP$pre_post=="Pre"],CDSMP$tech4[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+## CPSMP
+#### Loneliness (CPSMP)
+```{r loneliness CPSMP, echo=FALSE}
+t.test(CDSMP$loneliness[CDSMP$pre_post=="Pre"],CDSMP$loneliness[CDSMP$pre_post=="Post"], paired = TRUE)
+
+
+fisher.test(CDSMP$loneliness[CDSMP$pre_post=="Pre"],CDSMP$loneliness[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Social isolation (CPSMP)
+```{r social isolation CPSMP, echo=FALSE}
+
+t.test(CDSMP$soc_isolation[CDSMP$pre_post=="Pre"],CDSMP$soc_isolation[CDSMP$pre_post=="Post"], paired = TRUE)
+
+
+fisher.test(CDSMP$soc_isolation[CDSMP$pre_post=="Pre"],CDSMP$soc_isolation[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Anxiety (CPSMP)
+```{r anxiety CPSMP, echo=FALSE}
+t.test(CDSMP$anxiety[CDSMP$pre_post=="Pre"],CDSMP$anxiety[CDSMP$pre_post=="Post"], paired = TRUE)
+
+
+fisher.test(CDSMP$anxiety[CDSMP$pre_post=="Pre"],CDSMP$anxiety[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Depression (CPSMP)
+```{r depression CPSMP, echo=FALSE}
+t.test(CDSMP$depression[CDSMP$pre_post=="Pre"],CDSMP$depression[CDSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(CDSMP$depression[CDSMP$pre_post=="Pre"],CDSMP$depression[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Physical activity (CPSMP)
+```{r physcial activity CPSMP, echo=FALSE}
+t.test(CDSMP$phys_activity[CDSMP$pre_post=="Pre"],CDSMP$phys_activity[CDSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(CDSMP$phys_activity[CDSMP$pre_post=="Pre"],CDSMP$phys_activity[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Physical activity - # of days (CPSMP)
+```{r physical activity days CPSMP, echo=FALSE}
+t.test(CDSMP$pa1[CDSMP$pre_post=="Pre"],CDSMP$pa1[CDSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(CDSMP$pa1[CDSMP$pre_post=="Pre"],CDSMP$pa1[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Physical activity - # of minutes (CPSMP)
+```{r physical activity minutes CPSMP, echo=FALSE}
+t.test(CDSMP$pa2[CDSMP$pre_post=="Pre"],CDSMP$pa2[CDSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(CDSMP$pa2[CDSMP$pre_post=="Pre"],CDSMP$pa2[CDSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Social needs (CPSMP)
+```{r social needs CPSMP, echo=FALSE}
+t.test(CPSMP$social_needs[CPSMP$pre_post=="Pre"],CPSMP$social_needs[CPSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(CPSMP$social_needs[CPSMP$pre_post=="Pre"],CPSMP$social_needs[CPSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Self-efficacy (CPSMP)
+##### Note: No observations, t-tests won't run
+```{r self efficacy CPSMP, echo=FALSE}
+# t.test(CPSMP$self_efficacy[CPSMP$pre_post=="Pre"],CPSMP$self_efficacy[CPSMP$pre_post=="Post"], paired = TRUE)
+# 
+# fisher.test(CPSMP$self_efficacy[CPSMP$pre_post=="Pre"],CPSMP$self_efficacy[CPSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Pain interference (CPSMP)
+```{r pain interference CPSMP, echo=FALSE}
+t.test(CPSMP$pain_interference[CPSMP$pre_post=="Pre"],CPSMP$pain_interference[CPSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(CPSMP$pain_interference[CPSMP$pre_post=="Pre"],CPSMP$pain_interference[CPSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Diabetes (CPSMP)
+##### Note: No observations, t-tests won't run
+```{r diabetes CPSMP, echo=FALSE}
+# t.test(CPSMP$diabetes[CPSMP$pre_post=="Pre"],CPSMP$diabetes[CPSMP$pre_post=="Post"], paired = TRUE)
+# 
+# fisher.test(CPSMP$diabetes[CPSMP$pre_post=="Pre"],CPSMP$diabetes[CPSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Self-rated health (CPSMP)
+```{r health CPSMP, echo=FALSE}
+t.test(CPSMP$health[CPSMP$pre_post=="Pre"],CPSMP$health[CPSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(CPSMP$health[CPSMP$pre_post=="Pre"],CPSMP$health[CPSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Fatigue (CPSMP)
+```{r fatigue CPSMP, echo=FALSE}
+t.test(CPSMP$fatigue[CPSMP$pre_post=="Pre"],CPSMP$fatigue[CPSMP$pre_post=="Post"], paired = TRUE)
+fatigue
+
+fisher.test(CPSMP$fatigue[CPSMP$pre_post=="Pre"],CPSMP$fatigue[CPSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Pain (CPSMP)
+```{r pain CPSMP, echo=FALSE}
+t.test(CPSMP$pain[CPSMP$pre_post=="Pre"],CPSMP$pain[CPSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(CPSMP$pain[CPSMP$pre_post=="Pre"],CPSMP$pain[CPSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Sleep (CPSMP)
+```{r sleep CPSMP, echo=FALSE}
+t.test(CPSMP$sleep[CPSMP$pre_post=="Pre"],CPSMP$sleep[CPSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(CPSMP$sleep[CPSMP$pre_post=="Pre"],CPSMP$sleep[CPSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Tech3 (CPSMP)
+```{r tech3 CPSMP, echo=FALSE}
+t.test(CPSMP$tech3[CPSMP$pre_post=="Pre"],CPSMP$tech3[CPSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(CPSMP$tech3[CPSMP$pre_post=="Pre"],CPSMP$tech3[CPSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Tech4 (CPSMP)
+```{r tech4 CPSMP, echo=FALSE}
+t.test(CPSMP$tech4[CPSMP$pre_post=="Pre"],CPSMP$tech4[CPSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(CPSMP$tech4[CPSMP$pre_post=="Pre"],CPSMP$tech4[CPSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+## DSMP
+#### Loneliness (DSMP)
+```{r loneliness DSMP, echo=FALSE}
+t.test(DSMP$loneliness[DSMP$pre_post=="Pre"],DSMP$loneliness[DSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(DSMP$loneliness[DSMP$pre_post=="Pre"],DSMP$loneliness[DSMP$pre_post=="Post"], simulate.p.value=TRUE)
+
+```
+
+#### Social isolation (DSMP)
+```{r social isolation DSMP, echo=FALSE}
+t.test(DSMP$soc_isolation[DSMP$pre_post=="Pre"],DSMP$soc_isolation[DSMP$pre_post=="Post"], paired = TRUE)
+
+
+fisher.test(DSMP$soc_isolation[DSMP$pre_post=="Pre"],DSMP$soc_isolation[DSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Anxiety (DSMP)
+```{r anxiety DSMP, echo=FALSE}
+t.test(DSMP$anxiety[DSMP$pre_post=="Pre"],DSMP$anxiety[DSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(DSMP$anxiety[DSMP$pre_post=="Pre"],DSMP$anxiety[DSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Depression (DSMP)
+```{r depression DSMP, echo=FALSE}
+t.test(DSMP$depression[DSMP$pre_post=="Pre"],DSMP$depression[DSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(DSMP$depression[DSMP$pre_post=="Pre"],DSMP$depression[DSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Physical activity (DSMP)
+```{r physcial activity DSMP, echo=FALSE}
+t.test(DSMP$phys_activity[DSMP$pre_post=="Pre"],DSMP$phys_activity[DSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(DSMP$phys_activity[DSMP$pre_post=="Pre"],DSMP$phys_activity[DSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Physical activity - # of days (DSMP)
+```{r physical activity days DSMP, echo=FALSE}
+t.test(DSMP$pa1[DSMP$pre_post=="Pre"],DSMP$pa1[DSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(DSMP$pa1[DSMP$pre_post=="Pre"],DSMP$pa1[DSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Physical activity - # of minutes (DSMP)
+```{r physical activity minutes DSMP, echo=FALSE}
+t.test(DSMP$pa2[DSMP$pre_post=="Pre"],DSMP$pa2[DSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(DSMP$pa2[DSMP$pre_post=="Pre"],DSMP$pa2[DSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Social needs (DSMP)
+```{r social needs DSMP, echo=FALSE}
+t.test(DSMP$social_needs[DSMP$pre_post=="Pre"],DSMP$social_needs[DSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(DSMP$social_needs[DSMP$pre_post=="Pre"],DSMP$social_needs[DSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Self-efficacy (DSMP)
+##### Note: N= 1 observations, t-tests won't run
+```{r self efficacy DSMP, echo=FALSE}
+# t.test(DSMP$self_efficacy[DSMP$pre_post=="Pre"],DSMP$self_efficacy[DSMP$pre_post=="Post"], paired = TRUE)
+# 
+# fisher.test(DSMP$self_efficacy[DSMP$pre_post=="Pre"],DSMP$self_efficacy[DSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Pain interference (DSMP)
+##### Note: No observations, t-tests won't run
+```{r pain interference DSMP, echo=FALSE}
+# t.test(DSMP$pain_interference[DSMP$pre_post=="Pre"],DSMP$pain_interference[DSMP$pre_post=="Post"], paired = TRUE)
+# 
+# fisher.test(DSMP$pain_interference[DSMP$pre_post=="Pre"],DSMP$pain_interference[DSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Diabetes (DSMP)
+```{r diabetes DSMP, echo=FALSE}
+t.test(DSMP$diabetes[DSMP$pre_post=="Pre"],DSMP$diabetes[DSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(DSMP$diabetes[DSMP$pre_post=="Pre"],DSMP$diabetes[DSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Self-rated health (DSMP)
+```{r health DSMP, echo=FALSE}
+t.test(DSMP$health[DSMP$pre_post=="Pre"],DSMP$health[DSMP$pre_post=="Post"], paired = TRUE)
+
+
+fisher.test(DSMP$health[DSMP$pre_post=="Pre"],DSMP$health[DSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Fatigue (DSMP)
+```{r fatigue DSMP, echo=FALSE}
+t.test(DSMP$fatigue[DSMP$pre_post=="Pre"],DSMP$fatigue[DSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(DSMP$fatigue[DSMP$pre_post=="Pre"],DSMP$fatigue[DSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Pain (DSMP)
+```{r pain DSMP, echo=FALSE}
+t.test(DSMP$pain[DSMP$pre_post=="Pre"],DSMP$pain[DSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(DSMP$pain[DSMP$pre_post=="Pre"],DSMP$pain[DSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Sleep (DSMP)
+```{r sleep DSMP, echo=FALSE}
+t.test(DSMP$sleep[DSMP$pre_post=="Pre"],DSMP$sleep[DSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(DSMP$sleep[DSMP$pre_post=="Pre"],DSMP$sleep[DSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Tech3 (DSMP)
+```{r tech3 DSMP, echo=FALSE}
+t.test(DSMP$tech3[DSMP$pre_post=="Pre"],DSMP$tech3[DSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(DSMP$tech3[DSMP$pre_post=="Pre"],DSMP$tech3[DSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Tech4 (DSMP)
+```{r tech4 DSMP, echo=FALSE}
+t.test(DSMP$tech4[DSMP$pre_post=="Pre"],DSMP$tech4[DSMP$pre_post=="Post"], paired = TRUE)
+
+fisher.test(DSMP$tech4[DSMP$pre_post=="Pre"],DSMP$tech4[DSMP$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+## Enhance Fitness
+#### Loneliness (Enhance Fitness)
+```{r loneliness Enhance Fitness, echo=FALSE}
+t.test(EnhanceFitness$loneliness[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$loneliness[EnhanceFitness$pre_post=="Post"], paired = TRUE)
+
+fisher.test(EnhanceFitness$loneliness[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$loneliness[EnhanceFitness$pre_post=="Post"], simulate.p.value=TRUE)
+
+```
+
+
+#### Social isolation (Enhance Fitness)
+```{r social isolation Enhance Fitness, echo=FALSE}
+t.test(EnhanceFitness$soc_isolation[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$soc_isolation[EnhanceFitness$pre_post=="Post"], paired = TRUE)
+
+fisher.test(EnhanceFitness$soc_isolation[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$soc_isolation[EnhanceFitness$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Anxiety (Enhance Fitness)
+```{r anxiety Enhance Fitness, echo=FALSE}
+t.test(EnhanceFitness$anxiety[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$anxiety[EnhanceFitness$pre_post=="Post"], paired = TRUE)
+
+fisher.test(EnhanceFitness$anxiety[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$anxiety[EnhanceFitness$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Depression (Enhance Fitness)
+```{r depression Enhance Fitness, echo=FALSE}
+t.test(EnhanceFitness$depression[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$depression[EnhanceFitness$pre_post=="Post"], paired = TRUE)
+
+fisher.test(EnhanceFitness$depression[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$depression[EnhanceFitness$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Physical activity (Enhance Fitness)
+```{r physcial activity Enhance Fitness, echo=FALSE}
+t.test(EnhanceFitness$phys_activity[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$phys_activity[EnhanceFitness$pre_post=="Post"], paired = TRUE)
+
+fisher.test(EnhanceFitness$phys_activity[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$phys_activity[EnhanceFitness$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Physical activity - # of days (Enhance Fitness)
+```{r physical activity days Enhance Fitness, echo=FALSE}
+t.test(EnhanceFitness$pa1[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$pa1[EnhanceFitness$pre_post=="Post"], paired = TRUE)
+
+fisher.test(EnhanceFitness$pa1[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$pa1[EnhanceFitness$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Physical activity - # of minutes (Enhance Fitness)
+```{r physical activity minutes Enhance Fitness, echo=FALSE}
+t.test(EnhanceFitness$pa2[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$pa2[EnhanceFitness$pre_post=="Post"], paired = TRUE)
+
+fisher.test(EnhanceFitness$pa2[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$pa2[EnhanceFitness$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Social needs (Enhance Fitness)
+```{r social needs Enhance Fitness, echo=FALSE}
+t.test(EnhanceFitness$social_needs[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$social_needs[EnhanceFitness$pre_post=="Post"], paired = TRUE)
+
+fisher.test(EnhanceFitness$social_needs[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$social_needs[EnhanceFitness$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Self-efficacy (Enhance Fitness)
+##### Note: No observations, t-tests won't run
+```{r self efficacy Enhance Fitness, echo=FALSE}
+# t.test(EnhanceFitness$self_efficacy[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$self_efficacy[EnhanceFitness$pre_post=="Post"], paired = TRUE)
+# 
+# fisher.test(EnhanceFitness$self_efficacy[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$self_efficacy[EnhanceFitness$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Pain interference (Enhance Fitness)
+##### Note: No observations, t-tests won't run
+```{r pain interference Enhance Fitness, echo=FALSE}
+# t.test(EnhanceFitness$pain_interference[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$pain_interference[EnhanceFitness$pre_post=="Post"], paired = TRUE)
+# 
+# fisher.test(EnhanceFitness$pain_interference[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$pain_interference[EnhanceFitness$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Diabetes (Enhance Fitness)
+##### Note: No observations, t-tests won't run
+```{r diabetes Enhance Fitness, echo=FALSE}
+# t.test(EnhanceFitness$diabetes[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$diabetes[EnhanceFitness$pre_post=="Post"], paired = TRUE)
+# 
+# fisher.test(EnhanceFitness$diabetes[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$diabetes[EnhanceFitness$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Self-rated health (Enhance Fitness)
+```{r health Enhance Fitness, echo=FALSE}
+t.test(EnhanceFitness$health[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$health[EnhanceFitness$pre_post=="Post"], paired = TRUE)
+
+fisher.test(EnhanceFitness$health[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$health[EnhanceFitness$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Fatigue (Enhance Fitness)
+```{r fatigue Enhance Fitness, echo=FALSE}
+t.test(EnhanceFitness$fatigue[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$fatigue[EnhanceFitness$pre_post=="Post"], paired = TRUE)
+
+fisher.test(EnhanceFitness$fatigue[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$fatigue[EnhanceFitness$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Pain (Enhance Fitness)
+```{r pain Enhance Fitness, echo=FALSE}
+t.test(EnhanceFitness$pain[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$pain[EnhanceFitness$pre_post=="Post"], paired = TRUE)
+
+fisher.test(EnhanceFitness$pain[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$pain[EnhanceFitness$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Sleep (Enhance Fitness)
+```{r sleep Enhance Fitness, echo=FALSE}
+t.test(EnhanceFitness$sleep[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$sleep[EnhanceFitness$pre_post=="Post"], paired = TRUE)
+
+fisher.test(EnhanceFitness$sleep[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$sleep[EnhanceFitness$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Tech3 (Enhance Fitness)
+```{r tech3 Enhance Fitness, echo=FALSE}
+t.test(EnhanceFitness$tech3[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$tech3[EnhanceFitness$pre_post=="Post"], paired = TRUE)
+
+fisher.test(EnhanceFitness$tech3[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$tech3[EnhanceFitness$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Tech4 (Enhance Fitness)
+```{r tech4 Enhance Fitness, echo=FALSE}
+t.test(EnhanceFitness$tech4[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$tech4[EnhanceFitness$pre_post=="Post"], paired = TRUE)
+
+fisher.test(EnhanceFitness$tech4[EnhanceFitness$pre_post=="Pre"],EnhanceFitness$tech4[EnhanceFitness$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+## Walk with Ease
+#### Loneliness (Walk with Ease)
+```{r loneliness Walk with Ease, echo=FALSE}
+t.test(WalkEase$loneliness[WalkEase$pre_post=="Pre"],WalkEase$loneliness[WalkEase$pre_post=="Post"], paired = TRUE)
+
+fisher.test(WalkEase$loneliness[WalkEase$pre_post=="Pre"],WalkEase$loneliness[WalkEase$pre_post=="Post"], simulate.p.value=TRUE)
+
+```
+
+#### Social isolation (Walk with Ease)
+```{r social isolation Walk with Ease, echo=FALSE}
+t.test(WalkEase$soc_isolation[WalkEase$pre_post=="Pre"],WalkEase$soc_isolation[WalkEase$pre_post=="Post"], paired = TRUE)
+
+fisher.test(WalkEase$soc_isolation[WalkEase$pre_post=="Pre"],WalkEase$soc_isolation[WalkEase$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Anxiety (Walk with Ease)
+```{r anxiety Walk with Ease, echo=FALSE}
+t.test(WalkEase$anxiety[WalkEase$pre_post=="Pre"],WalkEase$anxiety[WalkEase$pre_post=="Post"], paired = TRUE)
+
+fisher.test(WalkEase$anxiety[WalkEase$pre_post=="Pre"],WalkEase$anxiety[WalkEase$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Depression (Walk with Ease)
+```{r depression Walk with Ease, echo=FALSE}
+t.test(WalkEase$depression[WalkEase$pre_post=="Pre"],WalkEase$depression[WalkEase$pre_post=="Post"], paired = TRUE)
+
+fisher.test(WalkEase$depression[WalkEase$pre_post=="Pre"],WalkEase$depression[WalkEase$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Physical activity (Walk with Ease)
+```{r physcial activity Walk with Ease, echo=FALSE}
+t.test(WalkEase$phys_activity[WalkEase$pre_post=="Pre"],WalkEase$phys_activity[WalkEase$pre_post=="Post"], paired = TRUE)
+
+fisher.test(WalkEase$phys_activity[WalkEase$pre_post=="Pre"],WalkEase$phys_activity[WalkEase$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Physical activity - # of days (Walk with Ease)
+```{r physical activity days Walk with Ease, echo=FALSE}
+t.test(WalkEase$pa1[WalkEase$pre_post=="Pre"],WalkEase$pa1[WalkEase$pre_post=="Post"], paired = TRUE)
+
+fisher.test(WalkEase$pa1[WalkEase$pre_post=="Pre"],WalkEase$pa1[WalkEase$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Physical activity - # of minutes (Walk with Ease)
+```{r physical activity minutes Walk with Ease, echo=FALSE}
+t.test(WalkEase$pa2[WalkEase$pre_post=="Pre"],WalkEase$pa2[WalkEase$pre_post=="Post"], paired = TRUE)
+
+fisher.test(WalkEase$pa2[WalkEase$pre_post=="Pre"],WalkEase$pa2[WalkEase$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Social needs (Walk with Ease)
+```{r social needs Walk with Ease, echo=FALSE}
+t.test(WalkEase$social_needs[WalkEase$pre_post=="Pre"],WalkEase$social_needs[WalkEase$pre_post=="Post"], paired = TRUE)
+
+
+fisher.test(WalkEase$social_needs[WalkEase$pre_post=="Pre"],WalkEase$social_needs[WalkEase$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Self-efficacy (Walk with Ease)
+##### Note: No observations, t-tests won't run
+```{r self efficacy Walk with Ease, echo=FALSE}
+# t.test(WalkEase$self_efficacy[WalkEase$pre_post=="Pre"],WalkEase$self_efficacy[WalkEase$pre_post=="Post"], paired = TRUE)
+# 
+# fisher.test(WalkEase$self_efficacy[WalkEase$pre_post=="Pre"],WalkEase$self_efficacy[WalkEase$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+
+#### Pain interference (Walk with Ease)
+##### Note: No observations, t-tests won't run
+```{r pain interference Walk with Ease, echo=FALSE}
+# t.test(WalkEase$pain_interference[WalkEase$pre_post=="Pre"],WalkEase$pain_interference[WalkEase$pre_post=="Post"], paired = TRUE)
+# 
+# fisher.test(WalkEase$pain_interference[WalkEase$pre_post=="Pre"],WalkEase$pain_interference[WalkEase$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Diabetes (Walk with Ease)
+##### Note: No observations, t-tests won't run
+```{r diabetes Walk with Ease, echo=FALSE}
+# t.test(WalkEase$diabetes[WalkEase$pre_post=="Pre"],WalkEase$diabetes[WalkEase$pre_post=="Post"], paired = TRUE)
+# 
+# fisher.test(WalkEase$diabetes[WalkEase$pre_post=="Pre"],WalkEase$diabetes[WalkEase$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Self-rated health (Walk with Ease)
+```{r health Walk with Ease, echo=FALSE}
+t.test(WalkEase$health[WalkEase$pre_post=="Pre"],WalkEase$health[WalkEase$pre_post=="Post"], paired = TRUE)
+
+fisher.test(WalkEase$health[WalkEase$pre_post=="Pre"],WalkEase$health[WalkEase$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Fatigue (Walk with Ease)
+```{r fatigue Walk with Ease, echo=FALSE}
+t.test(WalkEase$fatigue[WalkEase$pre_post=="Pre"],WalkEase$fatigue[WalkEase$pre_post=="Post"], paired = TRUE)
+
+fisher.test(WalkEase$fatigue[WalkEase$pre_post=="Pre"],WalkEase$fatigue[WalkEase$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Pain (Walk with Ease)
+```{r pain Walk with Ease, echo=FALSE}
+t.test(WalkEase$pain[WalkEase$pre_post=="Pre"],WalkEase$pain[WalkEase$pre_post=="Post"], paired = TRUE)
+
+
+fisher.test(WalkEase$pain[WalkEase$pre_post=="Pre"],WalkEase$pain[WalkEase$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Sleep (Walk with Ease)
+```{r sleep Walk with Ease, echo=FALSE}
+t.test(WalkEase$sleep[WalkEase$pre_post=="Pre"],WalkEase$sleep[WalkEase$pre_post=="Post"], paired = TRUE)
+
+fisher.test(WalkEase$sleep[WalkEase$pre_post=="Pre"],WalkEase$sleep[WalkEase$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Tech3 (Walk with Ease)
+```{r tech3 Walk with Ease, echo=FALSE}
+t.test(WalkEase$tech3[WalkEase$pre_post=="Pre"],WalkEase$tech3[WalkEase$pre_post=="Post"], paired = TRUE)
+
+fisher.test(WalkEase$tech3[WalkEase$pre_post=="Pre"],WalkEase$tech3[WalkEase$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
+#### Tech4 (Walk with Ease)
+```{r tech4 Walk with Ease, echo=FALSE}
+t.test(WalkEase$tech4[WalkEase$pre_post=="Pre"],WalkEase$tech4[WalkEase$pre_post=="Post"], paired = TRUE)
+
+fisher.test(WalkEase$tech4[WalkEase$pre_post=="Pre"],WalkEase$tech4[WalkEase$pre_post=="Post"], simulate.p.value=TRUE)
+```
+
 

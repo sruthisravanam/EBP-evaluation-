@@ -34,6 +34,8 @@ pacman::p_load(readr, dplyr, tidyr, lubridate, table1, stringr, ggplot2, kableEx
 # read in data
 df_outcomes <- read_csv("RemoteEBPCLEANPartic_DATA_2022-11-30_1445.csv") ## 1907 obs. 205 var. (downloaded data 12/2) 
 
+df_wide <- read_csv("df_wide.csv") 
+
 # Create a copy of data for testing
 df_test <- df_outcomes
 
@@ -480,7 +482,6 @@ table(df_outcomes$diabetes, useNA = "always")
 
 ### Tables ########
 
-
 #### Table 1 summary measures by program and pre/post
 
 ```{r table program pre post, echo=FALSE}
@@ -564,7 +565,18 @@ ggplot(df_outcomes, aes(x = pain)) +
   geom_text(stat='count', aes(label=..count..), vjust=-1) +
   geom_bar()
 ```
+#### Pain Change
+##### Note: for pain change the formula = (post pain score) - (pre pain score). Those that improved in pain score will be negative (N = 111 improved in one point of pain score reported or higher and N=57 improved in pain score 2 points or more)
+```{r pain change, echo = FALSE}
 
+#### Pain
+table(df_wide$painchange, useNA = "always")
+
+ggplot(df_wide, aes(x = painchange)) +
+  scale_x_continuous(breaks = c(1:10)) +
+  geom_text(stat='count', aes(label=..count..), vjust=-1) +
+  geom_bar()
+```
 #### Sleep
 
 ```{r sleep1, echo = FALSE}
@@ -789,6 +801,45 @@ ggplot(df_outcomes, aes(x = pa2)) +
   geom_bar()
 
 ```
+
+#### Physical activity change- number of days
+##### Note: formula = numbers of days reported in post - numbers of day reported in pre
+
+```{r pa1 change, echo = FALSE}
+
+## Pa 2
+table(df_wide$pa_day, useNA = "always")
+
+label(df_wide$pa_day) <- "Change in number of minutes aerobic activity reported"
+
+ggplot(df_wide, aes(x = pa_day)) +
+  xlab("Change in number of days aerobic activity reported") +
+  scale_x_continuous(breaks = c(0:90)) +
+  geom_text(stat='count', aes(label=..count..), vjust=-1) +
+  geom_bar()
+
+```
+
+
+
+#### Physical activity change- number of minutes 
+##### Note: formula = numbers of minutes reported in post - numbers of minutes reported in pre
+
+```{r pa2 change, echo = FALSE}
+
+## Pa 2
+table(df_wide$pa_min, useNA = "always")
+
+label(df_wide$pa_min) <- "Change in number of minutes aerobic activity reported"
+
+ggplot(df_wide, aes(x = pa_min)) +
+  xlab("Change in number of minutes aerobic activity reported") +
+  scale_x_continuous(breaks = c(0:90)) +
+  geom_text(stat='count', aes(label=..count..), vjust=-1) +
+  geom_bar()
+
+```
+
 
 #### Table 1 pa1 and pa2 with pre/post
 
